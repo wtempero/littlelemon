@@ -7,15 +7,16 @@
 
 import SwiftUI
 
-let kFirstName = "first name key"
-let kLastName = "last name key"
-let kEmail = "email key"
+let kFirstName = "firstName"
+let kLastName = "lastName"
+let kEmail = "email"
+let kIsLoggedIn = "isLoggedIn"
 
 struct Onboarding: View {
-    @State var isLoggedIn = false
     @State var firstName = ""
     @State var lastName = ""
     @State var email = ""
+    @State var isLoggedIn = false
     
     var body: some View {
         NavigationStack{
@@ -35,22 +36,30 @@ struct Onboarding: View {
                     .padding(.horizontal)
 
                 Button {
-                    if (!firstName.isEmpty && !lastName.isEmpty && !email.isEmpty) {
-                        UserDefaults.standard.set(firstName, forKey: kFirstName)
-                        UserDefaults.standard.set(lastName,  forKey: kLastName)
-                        UserDefaults.standard.set(email,     forKey: kEmail)
-                        
-                        if email.contains("@") && email.contains(".") {
-                            print("Registration data saved — would navigate now")
-                            isLoggedIn = true
-                        } else {
-                            print("Please enter a valid email address")
-                        }
-                    } else {
+                    // Basic validation
+                    guard !firstName.isEmpty, !lastName.isEmpty, !email.isEmpty else {
                         print("Please fill in all fields")
+                        return
                     }
                     
-                } label: {
+                    guard email.contains("@"), email.contains(".") else {
+                        print("Please enter a valid email address")
+                        return
+                    }
+                    
+                    // Save data
+                    UserDefaults.standard.set(firstName, forKey: kFirstName)
+                    UserDefaults.standard.set(lastName,  forKey: kLastName)
+                    UserDefaults.standard.set(email,     forKey: kEmail)
+                    UserDefaults.standard.set(true,      forKey: kIsLoggedIn)
+                    isLoggedIn = true
+                    
+                    // force write (helps in some simulator/debug situations)
+                    UserDefaults.standard.synchronize()
+                    
+                    print("Registration successful — navigating to Home")
+                    
+                 } label: {
                     Text("Register")
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -59,6 +68,11 @@ struct Onboarding: View {
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 .padding(.horizontal)
+            }
+            .onAppear {
+                if UserDefaults.standard.bool(forKey: kIsLoggedIn) {
+                    isLoggedIn = true
+                }
             }
             // Modern programmatic navigation trigger — no NavigationLink needed
             .navigationDestination(isPresented: $isLoggedIn) {
