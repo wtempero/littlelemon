@@ -8,49 +8,58 @@
 import SwiftUI
 
 struct Menu: View {
+    @State private var userAvatar: Image? = nil  // or URL / initials fallback
+    // or better: @ObservedObject var userViewModel: UserViewModel
     @State private var menuItems: [MenuItem] = []
     @State private var isLoading = false
     @State private var errorMessage: String? = nil
     @State private var searchText = ""
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Header section (matches your mockup)
-                VStack(spacing: 8) {
-                    Text("Little Lemon")
-                        .font(.system(size: 48, weight: .bold, design: .serif))
-                        .foregroundColor(.littleLemonYellow)
-                        .multilineTextAlignment(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
+        VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Little Lemon")
+                    .font(.system(size: 48, weight: .bold, design: .serif))
+                    .foregroundColor(.littleLemonYellow)
+                    //.background(Color.pink.opacity(0.3))
 
-                    Text("Chicago")
-                        .font(.system(size: 28, weight: .semibold, design: .serif))
-                        .foregroundStyle(.gray)
-                        .multilineTextAlignment(.leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
+                HStack {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Chicago")
+                            .font(.system(size: 28, weight: .semibold, design: .serif))
+                            .foregroundColor(.white)
+                            //.background(Color.pink.opacity(0.3))
 
-                    Text("We are a family owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.")
-                        .font(.system(size: 18, weight: .regular))
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.leading)
-                        .lineSpacing(6)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.horizontal, 8)
-                        .padding(.top, 8)
-                        .padding(.bottom, 16)
-                }
-                .padding(.top, 40) // space from top of screen
+                        Text("We are a family owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.")
+                            .font(.system(size: 18, weight: .regular))
+                            .foregroundColor(.white)
+                            .lineSpacing(2)
+                            .padding(.top, 16)
+                            .fixedSize(horizontal: false, vertical: true)
+                    } //location, description text vstack
+                    //.background(Color.blue.opacity(0.2))
+                    .padding(.trailing, 8)
+                    .frame(maxWidth: .infinity)
+
+                    Image(.hero)
+                        .resizable()
+                        .frame(maxWidth: .infinity)
+                        .aspectRatio(1.0, contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                } //location, description, hero image hstack
 
                 // Search bar (simple TextField)
                 TextField("Search menu...", text: $searchText)
                     .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
+                    .padding(.top, 8)
+                    .padding(.bottom, 12)
+            } // static title area vstack
+            .padding(.leading, 8)
+            .padding(.trailing, 8)
+            .background(Color.littleLemonGreen)
 
-                // Menu content area
+            // Menu content area
+            NavigationStack {
                 Group {
                     if isLoading {
                         ProgressView("Loading menu…")
@@ -73,18 +82,45 @@ struct Menu: View {
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                                 // Add image, description later
-                            }
-                        }
-                    }
-                }
-            }
-            //.navigationTitle("Menu")
-            // use task to run automatically on appear
-            .task {
-                await fetchMenuData()
-            }
+                            } // menu item vstack
+                        } // list
+                    } // if isloading
+                } // menu item group
+                .frame(maxHeight: .infinity)  // ← key: let this grow
+
+            } // navigation menu item stack
+            .background(Color.pink.opacity(0.3))
+        } // whole screen vstack
+        // use task to run automatically on appear
+        .task {
+            await fetchMenuData()
         }
-    }
+        .safeAreaInset(edge: .top) {
+            // The top bar — white bg, fixed, overlays content below
+            HStack {
+                Spacer()
+
+                Image(.logo)
+                    .resizable()
+                    .frame(maxWidth: 200, maxHeight: 50)
+                    .aspectRatio(1.0, contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+
+                Image(.avatar)
+                    .resizable()
+                    .frame(maxWidth: 50, maxHeight: 50)
+                    .aspectRatio(1.0, contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)  // Tune height ~44-56pt standard
+            .background(.white)      // White bg as per mockup
+            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)  // Optional subtle  shadow
+            // .ignoresSafeArea(.top) if you want it under notch/status bar (common for     branded bars)
+            }
+            // Optional: .navigationBarHidden(true) if you want to fully hide default nav bar
+
+    } // view
 
     // Computed property: filter + sort
     private var filteredMenuItems: [MenuItem] {
