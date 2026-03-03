@@ -21,6 +21,8 @@ struct Home: View {
                 }
         }
         .navigationBarBackButtonHidden(true)
+        //.navigationTitle("Home")
+
    }
 }
 
