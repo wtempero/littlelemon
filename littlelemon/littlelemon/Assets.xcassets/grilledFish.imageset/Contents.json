@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Lemon dessert.png",
+      "filename" : "Grilled fish 1.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "Grilled fish.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "Grilled fish 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
