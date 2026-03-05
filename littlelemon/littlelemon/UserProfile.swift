@@ -16,7 +16,7 @@ struct UserProfile: View {
     var body: some View {
         VStack {
             Text("Personal Information")
-            Image("profile-image-placeholder")
+            Image.avatar
                 .resizable()
                 .scaledToFit()
                 .frame(width: 120, height: 120)

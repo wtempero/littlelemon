@@ -12,6 +12,8 @@ extension Image {
     static let hero = Image("Hero")
     static let logo = Image("Logo")
     static let avatar = Image("Avatar")
+    static let lemonDessert = Image("lemonDessert")
+    static let grilledFish = Image("grilledFish")
     
     // Profile placeholder (from earlier)
     //static let profilePlaceholder = Image("profile-image-placeholder")

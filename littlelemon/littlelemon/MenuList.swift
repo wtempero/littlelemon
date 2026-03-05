@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct MenuList: Decodable {
+nonisolated struct MenuList: Decodable {
     let menu: [MenuItem]
 }
