@@ -20,6 +20,8 @@ struct Menu: View {
     @State private var searchText: String = ""
     @State private var selectedCategory: String? = nil
 
+    @State var isUseAvatar = UserDefaults.standard.bool(forKey: kIsUseAvatar)
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0)
         {
@@ -148,10 +150,10 @@ struct Menu: View {
                                     try await PersistenceController.shared.clearAsync()
                                     let fetchRequest: NSFetchRequest<Dish> =        Dish.fetchRequest()
                                     if (try? viewContext.count(for: fetchRequest)) == 0 {
-                                        print("Button: clear complete, sending net request")
+                                        //print("Button: clear complete, sending net request")
                                         await getMenuDataAsync()
                                     } else {
-                                        print("Already have data, skipping fetch")
+                                        //print("Already have data, skipping fetch")
                                     }
                                 } catch {
                                     await MainActor.run {
@@ -207,11 +209,14 @@ struct Menu: View {
         } // whole screen vstack
         .onAppear {
             Task {
+                print("Does this run when navigating back?")
+                isUseAvatar = UserDefaults.standard.bool(forKey: kIsUseAvatar)
+
                 if isFirstAppearance {
                     isFirstAppearance = false
                     let fetchRequest: NSFetchRequest<Dish> = Dish.fetchRequest()
                     if (try? viewContext.count(for: fetchRequest)) == 0 {
-                        print("First appearance, auto-fetching menu")
+                        //print("First appearance, auto-fetching menu")
                         await getMenuDataAsync()
                     } else {
                         //print("Already have data, skipping fetch")
@@ -231,11 +236,33 @@ struct Menu: View {
                     .aspectRatio(1.0, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
-                Image(.avatar)
-                    .resizable()
-                    .frame(maxWidth: 50, maxHeight: 50)
-                    .aspectRatio(1.0, contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    //.navigationDestination(isPresented: $isLoggedIn) {
+                    //    Home()}
+
+                    if isUseAvatar {
+                        NavigationLink(destination: UserProfile()) {
+                            Image.avatar
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                            .clipShape(Circle())
+                        }
+                    } else {
+                        NavigationLink(destination: UserProfile()) {
+                            Image(systemName: "person.crop.circle.fill")
+                                .font(.system(size: 40))
+                                .foregroundStyle(.gray)
+                                .background(Circle().fill(.ultraThinMaterial))
+                        }
+                    }
+                    
+                    NavigationLink(destination: UserProfile()) {
+                        Image(systemName: "chevron.right")
+                            .font(.title2)
+                            .foregroundColor(.primary)
+                            .padding(8)
+                    }
+
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -363,9 +390,9 @@ struct Menu: View {
                 .padding(.vertical, 8)
             }
             .onAppear {
-                print("FilteredDishesView appeared — dishes count: \(dishes.count)")
+                //print("FilteredDishesView appeared — dishes count: \(dishes.count)")
                 if dishes.isEmpty {
-                    print("Empty results — check if data exists in context")
+                    //print("Empty results — check if data exists in context")
                 }
             }
 

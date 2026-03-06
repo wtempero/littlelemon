@@ -11,17 +11,18 @@ import CoreData
 struct Home: View {
     let persistence = PersistenceController.shared
 
-   var body: some View {
-        TabView{
+    var body: some View {
+        //TabView{
+        VStack {
             Menu()
-                .tabItem {
-                    Label("Menu", systemImage: "list.dash")
-                }
+                //.tabItem {
+                    //Label("Menu", systemImage: "list.dash")
+                //}
 
-            UserProfile()
-                .tabItem {
-                    Label("Profile", systemImage: "square.and.pencil")
-                }
+            //UserProfile()
+                //.tabItem {
+                    //Label("Profile", systemImage: "square.and.pencil")
+                //}
         }
         .navigationBarBackButtonHidden(true)
         //.navigationTitle("Home")
